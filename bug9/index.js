@@ -3,6 +3,6 @@ const routes = require('./routes');
 
 const app = express();
 
-app.get(routes);
+app.use(routes);
 
 app.listen(3000, () => console.log('Server running on port 3000'));
