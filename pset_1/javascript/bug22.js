@@ -9,8 +9,10 @@ function findUser(id) {
 }
 
 app.get('/users/:id', async (req, res) => {
+  // const user = await findUser(Number(req.params.id));
   const user = await findUser(Number(req.params.id));
-  res.json(user);
+
+  res.json(user); 
 });
 
 module.exports = app;
