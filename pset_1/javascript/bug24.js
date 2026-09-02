@@ -3,7 +3,7 @@ const app = express();
 
 function logger(req, res, next) {
   console.log(`${req.method} ${req.url}`);
-  next();
+  next();                                     //added next();
 }
 
 app.use(logger);
