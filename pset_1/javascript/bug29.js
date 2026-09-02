@@ -12,7 +12,7 @@ app.get('/token', (req, res) => {
 app.get('/protected', (req, res) => {
   const token = req.headers.authorization;
   try {
-    const payload = jwt.verify(token, 'wrong-secret-key');
+    const payload = jwt.verify(token, SIGNING_SECRET); // use the same secret
     res.json({ userId: payload.userId });
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
