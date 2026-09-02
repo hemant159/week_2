@@ -3,8 +3,15 @@ const app = express();
 
 function findUser(id) {
   return new Promise((resolve, reject) => {
-    if (id === 1) resolve({ id: 1, name: 'Alice' });
-    else reject(new Error('User not found'));
+    if (id === 1) 
+      {
+        resolve({ id: 1, name: 'Alice' });
+      }
+    else
+      {
+
+      reject(new Error('User not found'));
+      }
   });
 }
 
