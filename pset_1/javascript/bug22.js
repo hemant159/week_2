@@ -7,6 +7,9 @@ function findUser(id) {
     else reject(new Error('User not found'));
   });
 }
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');     // serverport missing
+});
 
 app.get('/users/:id', async (req, res) => {
   const user = await findUser(Number(req.params.id));

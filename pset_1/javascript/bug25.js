@@ -7,8 +7,11 @@ function requireApiKey(req, res, next) {
   }
   next();
 }
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
 
-app.use(requireApiKey);
+app.use(requireApiKey);           //????
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -19,3 +22,4 @@ app.get('/private-data', (req, res) => {
 });
 
 module.exports = app;
+
