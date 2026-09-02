@@ -8,14 +8,21 @@ function requireApiKey(req, res, next) {
   next();
 }
 
-app.use(requireApiKey);
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/private-data', (req, res) => {
+app.get('/private-data', requireApiKey, (req, res) => {
   res.json({ secret: 'top secret info' });
+});
+
+app.listen(3000, () => {
+  // console.log('Bug25 running on port 3000');
+   console.log('Bug25 running on port 3000');
 });
 
 module.exports = app;
