@@ -7,6 +7,10 @@ function getUserName(id) {
   });
 }
 
+app.get('/',(req,res)=> {
+    res.send('Hello World');
+});
+
 app.get('/names', async (req, res) => {
   const ids = [1, 2, 3];
   const names = ids.map(async (id) => await getUserName(id));
