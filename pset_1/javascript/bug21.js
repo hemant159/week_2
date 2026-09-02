@@ -8,7 +8,7 @@ function getUserById(id) {
 }
 
 app.get('/users/:id', async (req, res) => {
-  const user = getUserById(Number(req.params.id));
+  const user = await getUserById(Number(req.params.id));
   res.json(user);
 });
 
