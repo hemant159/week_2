@@ -4,7 +4,7 @@ const app = express();
 function requireAuth(req, res, next) {
   const token = req.headers.authorization;
   if (!token) {
-    res.status(401);
+   return res.status(401).json({error:unauthorized});
   }
   next();
 }
