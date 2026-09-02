@@ -10,8 +10,20 @@ function checkBody(req, res, next) {
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 app.post('/users', checkBody, (req, res) => {
   res.status(201).json({ message: 'Created' });
+});
+
+app.use((err, req, res, next) => {
+  res.status(400).json({ error: err.message });
+});
+
+app.listen(3000, () => {
+  console.log('Bug26 running on port 3000');
 });
 
 module.exports = app;
