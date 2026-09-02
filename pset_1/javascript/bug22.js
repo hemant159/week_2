@@ -7,17 +7,22 @@ function findUser(id) {
       {
         resolve({ id: 1, name: 'Alice' });
       }
-    else
-      {
-
+    else {
+      
       reject(new Error('User not found'));
-      }
+    } 
   });
 }
 
 app.get('/users/:id', async (req, res) => {
+  try{
+
   const user = await findUser(Number(req.params.id));
   res.json(user);
+  }
+  catch(error){
+    res.status(404).json({error: error.message});
+  }
 });
 
 module.exports = app;
