@@ -9,7 +9,9 @@ function getUserName(id) {
 
 app.get('/names', async (req, res) => {
   const ids = [1, 2, 3];
-  const names = ids.map(async (id) => await getUserName(id));
+  const names = await Promise.all(
+    ids.map((id) => getUserName (id))
+  );
   res.json({ names });
 });
 

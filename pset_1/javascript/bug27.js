@@ -5,7 +5,7 @@ app.get('/crash', (req, res) => {
   throw new Error('Something broke');
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
