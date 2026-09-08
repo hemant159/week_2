@@ -1,12 +1,22 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const dotenv=require('dotenv');
+const rateLimit=require('express-rate-limit');
 
 const app = express();
 app.use(express.json());
 
+dotenv.config()
+
 // TODO: solve this
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
+
+if (!(process.env.JWT_SECRET)){
+  throw new Error('JWT_SECRET is not found .')
+}
+
+const JWT_SECRET =  process.env.JWT_SECRET ;
 
 let users = [];
 let nextUserId = 1;
@@ -17,20 +27,19 @@ let nextNoteId = 1;
 // ---------- AUTH ROUTES (public) ----------
 
 app.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase() : undefined;
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'name, email and password are required' });
   }
 
-  // TODO: solve this
   const existing = users.find(u => u.email === email);
   if (existing) {
     return res.status(409).json({ error: 'Email already registered' });
   }
 
-  // TODO: solve this
-  const hashedPassword = await bcrypt.hash(password, 1);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = { id: nextUserId++, name, email, password: hashedPassword };
   users.push(user);
@@ -39,7 +48,8 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const {  password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase() : undefined;
 
   const user = users.find(u => u.email === email);
   if (!user) {
@@ -47,7 +57,7 @@ app.post('/login', async (req, res) => {
   }
 
   // TODO: solve this
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch =await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
@@ -55,7 +65,9 @@ app.post('/login', async (req, res) => {
   const payload = { userId: user.id, email: user.email };
 
   // TODO: solve this
-  const token = jwt.sign(payload, JWT_SECRET);
+  const token = jwt.sign(payload, JWT_SECRET,{
+    expiresIn:'1h'
+  });
 
   res.json({ message: 'Login successful', token });
 });
@@ -95,7 +107,20 @@ app.post('/notes', requireAuth, (req, res) => {
   }
 
   // TODO: solve this
-  const note = { id: nextNoteId++, userId: req.user.usedId, title, content: content || '' };
+  const note = { id: nextNoteId++, userId: req.user.userId, title, content: content || '' };
+  notes.push(note);
+
+  res.status(201).json(note);
+});
+
+app.post('/notes', requireAuth, (req, res) => {
+  const { title, content } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'title is required' });
+  }
+
+  const note = { id: nextNoteId++, userId: req.user.userId, title, content: content || '' };
   notes.push(note);
 
   res.status(201).json(note);
@@ -106,22 +131,23 @@ app.get('/notes', requireAuth, (req, res) => {
   res.json(myNotes);
 });
 
-// TODO: solve this
 app.get('/notes/:id', requireAuth, (req, res) => {
-  const note = notes.find(n => n.id === Number(req.params.id));
+  const note = notes.find(n => n.id === Number(req.params.id) && n.userId === req.user.userId);
   if (!note) return res.status(404).json({ error: 'Not found' });
   res.json(note);
 });
 
-// TODO: solve this
 app.patch('/notes/:id', requireAuth, (req, res) => {
   const note = notes.find(n => n.id === Number(req.params.id) && n.userId === req.user.userId);
   if (!note) return res.status(404).json({ error: 'Not found' });
 
-  Object.assign(note, req.body);
+  const { title, content } = req.body;
+
+  if (title !== undefined) note.title = title;
+  if (content !== undefined) note.content = content;
+
   res.json(note);
 });
-
 // TODO: solve this — /login has no protection against repeated
 // login attempts on the same account
 
